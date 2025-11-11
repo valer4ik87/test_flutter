@@ -7,3 +7,9 @@ class GifSearchEvent extends GifEvent {
 
     GifSearchEvent(this.searchString);
 }
+
+class GifNewSearchEvent extends GifEvent {
+    String searchString = "";
+
+    GifNewSearchEvent(this.searchString);
+}

@@ -7,46 +7,56 @@ import 'gif_event.dart';
 import 'gif_state.dart';
 
 
-class GifBloc extends Bloc<GifEvent, GifState> {
+class GifBloc extends Bloc<GifEvent, PagingState<int, GifUI>> {
   final GifRepository gifRepository;
-  late final PagingController<int, GifUI> pagingController;
 
   var searchString = "";
   final limit = 20;
 
 
-  GifBloc(this.gifRepository) : super(InitState()) {
-    pagingController = PagingController<int, GifUI>(
-      fetchPage: (pageKey) async {
-        final gifs = await gifRepository.searchGif(
-          searchString,
+  GifBloc(this.gifRepository) : super(PagingState()) {
+    //on<GifSearchEvent>(onSearch);
+    on<GifSearchEvent>((event, emit) async{
+      final newState = state;
+      if (newState.isLoading) return;
+
+      emit(newState.copyWith(isLoading: true, error: null));
+      searchString = event.searchString;
+      try {
+        final newKey = (newState.keys?.last ?? 0) + 1;
+        final newItems = await gifRepository.searchGif(
+          event.searchString,
           limit,
-          pageKey*limit,
+          newKey*limit,
         );
-        return gifs??List.empty();
-      },
-      getNextPageKey: (state) {
-        final lastPageIsEmpty = state.pages?.isEmpty==true || state.pages?.last.isEmpty==true;
-        if (lastPageIsEmpty) return null;
-        final lastKey = state.nextIntPageKey;
-        return lastKey;
-      },
+        final isLastPage = newItems.isEmpty;
+
+        emit(newState.copyWith(
+          pages: [...?state.pages, newItems],
+          keys: [...?state.keys, newKey],
+          hasNextPage: !isLastPage,
+          isLoading: false,
+        ));
+      } catch (error) {
+        emit(state.copyWith(
+          error: error,
+          isLoading: false,
+        ));
+      }
+    },
     );
-    on<GifSearchEvent>(onSearch);
 
+    on<GifNewSearchEvent>((event, emit) async{
+      final newState = state;
+        emit(newState.reset());
+        add(GifSearchEvent(event.searchString));
+    },
+    );
   }
 
-  Future<void> onSearch(GifSearchEvent event, Emitter<GifState> emit) async {
-    emit(GifLoading());
+  Future<void> onSearch(GifSearchEvent event, Emitter<PagingState<int, GifState>> emit) async {
+    emit(PagingState());
     searchString = event.searchString;
-    pagingController.refresh();
-    pagingController.fetchNextPage();
-  }
-
-  @override
-  Future<void> close() {
-    pagingController.dispose();
-    return super.close();
   }
 
 }

@@ -7,9 +7,9 @@ import '../../env/keys.dart';
 class GifRepository {
   final client = RestClient(DioClient().dio);
 
-  Future<List<GifUI>?> searchGif(String searchString, int limit, int offset) async {
+  Future<List<GifUI>> searchGif(String searchString, int limit, int offset) async {
     final response = await client.getGifs(Keys.gifKey, searchString, limit, offset);
-    var newList = response?.data?.map((toElement) => GifUI.toGifUI(toElement));
-    return newList?.toList();
+    var newList = response?.data?.map((toElement) => GifUI.toGifUI(toElement))??List.empty();
+    return newList.toList();
   }
 }
