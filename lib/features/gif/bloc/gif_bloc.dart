@@ -11,7 +11,7 @@ class GifBloc extends Bloc<GifEvent, PagingState<int, GifUI>> {
   final GifRepository gifRepository;
 
   var searchString = "";
-  final limit = 20;
+  final limit = 10;
 
 
   GifBloc(this.gifRepository) : super(PagingState()) {

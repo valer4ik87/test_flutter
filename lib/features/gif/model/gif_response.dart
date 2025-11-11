@@ -1,5 +1,8 @@
 
+import 'dart:collection';
+
 import 'package:json_annotation/json_annotation.dart';
+import 'package:test_flutter/features/gif/model/gif_image.dart';
 
 part 'gif_response.g.dart';
 
@@ -8,8 +11,9 @@ class GifResponse {
       String? id;
       String? title;
       String? userName;
+      Map<String,GifImage>? images;
 
-      GifResponse({this.id, this.title, this.userName});
+      GifResponse({this.id, this.title, this.userName, this.images});
 
 
       factory GifResponse.fromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:nil/nil.dart';
@@ -55,27 +56,50 @@ class _GifListScreenState extends State<GifListScreen> {
               border: OutlineInputBorder(),
             ),
             onChanged: (text) {
-              setState(() {
-                bloc.searchString = text;
-                _pagingController.refresh();
-              });
+              bloc.searchString = text;
+              _pagingController.refresh();
             },
           ),
           Expanded(
             child: PagingListener(
               controller: _pagingController,
               builder: (context, state, fetchNextPage) {
-                return PagedGridView<int, GifUI>(
-                  state: state,
-                  fetchNextPage: fetchNextPage,
-                  builderDelegate: PagedChildBuilderDelegate(
-                    itemBuilder: (context, item, index) {
-                      return Text(item.title ?? "");
-                    },
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
+                return Column(
+                  children: [
+                    Expanded(
+                      child: PagedGridView<int, GifUI>(
+                        state: state,
+                        fetchNextPage: fetchNextPage,
+                        builderDelegate: PagedChildBuilderDelegate(
+                          itemBuilder: (context, item, index) {
+                            return Column(
+                              children: [
+                                Expanded(
+                                  child: GifView.network(
+                                    item.previewUrl ?? "",
+                                  ),
+                                ),
+                                Center(child: Align(alignment: Alignment.center, child:Text(item.title ?? "")))
+                              ],
+                            );
+                          },
+                          newPageProgressIndicatorBuilder: (context) {
+                            return nil;
+                          },
+                        ),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                      ),
+                    ),
+                    if (state.isLoading)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                  ],
                 );
               },
             ),
