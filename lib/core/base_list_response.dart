@@ -1,12 +1,16 @@
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:test_flutter/core/meta_response.dart';
+import 'package:test_flutter/core/pagination_response.dart';
 
 part 'base_list_response.g.dart';
 
 @JsonSerializable(genericArgumentFactories: true)
 class BaseListResponse<T> {
       List<T>? data;
-      BaseListResponse({this.data});
+      PaginationResponse? pagination;
+      MetaResponse? meta;
+      BaseListResponse({this.data, this.pagination, this.meta});
 
       factory BaseListResponse.fromJson(
           Map<String, dynamic> json,

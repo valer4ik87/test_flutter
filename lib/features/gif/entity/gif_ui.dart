@@ -9,6 +9,6 @@ class GifUI {
    GifUI({this.title, this.author, this.previewUrl, this.originalUrl});
 
    static GifUI toGifUI(GifResponse? response){
-      return GifUI(title:response?.title, author: response?.userName, previewUrl: response?.images?["preview_gif"]?.url, originalUrl: response?.images?["original"]?.url);
+      return GifUI(title:response?.title, author: response?.username, previewUrl: response?.images?["preview_gif"]?.url, originalUrl: response?.images?["original"]?.url);
    }
 }

@@ -2,14 +2,12 @@ abstract class GifEvent {}
 
 class ItemClick extends GifEvent{}
 
-class GifSearchEvent extends GifEvent {
-    String searchString = "";
-
-    GifSearchEvent(this.searchString);
+class FetchDataEvent extends GifEvent {
+    int pageKey;
+    FetchDataEvent(this.pageKey);
 }
 
 class GifNewSearchEvent extends GifEvent {
     String searchString = "";
-
     GifNewSearchEvent(this.searchString);
 }

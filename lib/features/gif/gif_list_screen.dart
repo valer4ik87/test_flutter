@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gif_view/gif_view.dart';
@@ -20,91 +22,140 @@ class GifListScreen extends StatefulWidget {
 
 class _GifListScreenState extends State<GifListScreen> {
   late GifBloc _bloc;
+  late final _pagingController = PagingController<int, GifUI>(firstPageKey: 0);
+  Timer? _debounce;
 
   @override
   initState() {
     super.initState();
     _bloc = context.read<GifBloc>();
+    _pagingController.addPageRequestListener((pageKey) {
+      _bloc.add(FetchDataEvent(pageKey));
+    });
   }
-
-  late final _pagingController = PagingController<int, GifUI>(
-    getNextPageKey: (state) =>
-        state.lastPageIsEmpty ? null : state.nextIntPageKey,
-    fetchPage: (pageKey) => _bloc.gifRepository.searchGif(
-      _bloc.searchString,
-      _bloc.limit,
-      _bloc.limit * pageKey,
-    ),
-  );
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _pagingController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<GifBloc>();
     return Scaffold(
       appBar: AppBar(title: const Text("List Gif")),
-      body: Column(
-        children: [
-          TextField(
-            decoration: const InputDecoration(
-              labelText: 'Search',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (text) {
-              bloc.searchString = text;
-              _pagingController.refresh();
-            },
-          ),
-          Expanded(
-            child: PagingListener(
-              controller: _pagingController,
-              builder: (context, state, fetchNextPage) {
-                return Column(
-                  children: [
-                    Expanded(
-                      child: PagedGridView<int, GifUI>(
-                        state: state,
-                        fetchNextPage: fetchNextPage,
-                        builderDelegate: PagedChildBuilderDelegate(
-                          itemBuilder: (context, item, index) {
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: GifView.network(
-                                    item.previewUrl ?? "",
-                                  ),
-                                ),
-                                Center(child: Align(alignment: Alignment.center, child:Text(item.title ?? "")))
-                              ],
-                            );
-                          },
-                          newPageProgressIndicatorBuilder: (context) {
-                            return nil;
-                          },
+      body: SafeArea(
+        child: Column(
+          children: [
+            BlocListener<GifBloc, GifState>(
+              listener: (context, state) {
+                if (state is GifError) {
+                  _pagingController.value = PagingState(
+                    nextPageKey: 0,
+                    error: null,
+                    itemList: List.empty(),
+                  );
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Error'),
+                      content: Text(state.error),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('ОК'),
                         ),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                        ),
-                      ),
+                      ],
                     ),
-                    if (state.isLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                  ],
-                );
+                  );
+                }
               },
+              child: Expanded(
+                child: BlocBuilder<GifBloc, GifState>(
+                  builder: (context, state) {
+                    if (state is GifSuccessResponse) {
+                      if (state.isLastPage) {
+                        _pagingController.appendLastPage(state.listGif);
+                      } else {
+                        _pagingController.appendPage(
+                          state.listGif,
+                          state.nextKey,
+                        );
+                      }
+                    }
+                    return Column(
+                      children: [
+                        Expanded(child: MyGridView()),
+                        if (state is GifLoading)
+                          Center(child: CircularProgressIndicator()),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
-        ],
+            MyInput(_bloc),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget MyInput(GifBloc bloc) {
+    return Container(
+      margin: EdgeInsets.all(30),
+      child: TextField(
+        decoration: const InputDecoration(
+          labelText: 'Search',
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (text) {
+          if (_debounce?.isActive ?? false) _debounce!.cancel();
+          _debounce = Timer(const Duration(milliseconds: 500), () {
+            _bloc.searchString = text;
+            _pagingController.refresh();
+          });
+        },
+      ),
+    );
+  }
+
+  Widget MyGridView() {
+    return PagedGridView<int, GifUI>(
+      pagingController: _pagingController,
+      builderDelegate: PagedChildBuilderDelegate(
+        itemBuilder: (context, item, index) {
+          return Column(
+            children: [
+              Expanded(child: GifView.network(item.previewUrl ?? "")),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(item.title ?? "", textAlign: TextAlign.center),
+              ),
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  "Author: ${item.author}",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          );
+        },
+        newPageProgressIndicatorBuilder: (context) {
+          return nil;
+        },
+        firstPageProgressIndicatorBuilder: (context) {
+          return nil;
+        },
+        firstPageErrorIndicatorBuilder: (context) {
+          return nil;
+        },
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
       ),
     );
   }

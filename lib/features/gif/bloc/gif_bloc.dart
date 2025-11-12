@@ -7,56 +7,32 @@ import 'gif_event.dart';
 import 'gif_state.dart';
 
 
-class GifBloc extends Bloc<GifEvent, PagingState<int, GifUI>> {
+class GifBloc extends Bloc<GifEvent, GifState> {
   final GifRepository gifRepository;
 
   var searchString = "";
-  final limit = 10;
+  final limit = 20;
 
 
-  GifBloc(this.gifRepository) : super(PagingState()) {
-    //on<GifSearchEvent>(onSearch);
-    on<GifSearchEvent>((event, emit) async{
-      final newState = state;
-      if (newState.isLoading) return;
+  GifBloc(this.gifRepository) : super(GifLoading()) {
+    on<FetchDataEvent>((event, emit) async {
+      emit(GifLoading());
+      final gifs = await gifRepository.searchGif(
+        searchString,
+        limit,
+        event.pageKey * limit,
+      );
+      gifs.fold((l) {
+        emit(GifError(l));
+      }, (r) {
+        emit(GifSuccessResponse(
+            listGif: r.$2, nextKey: event.pageKey + 1, isLastPage: r.$1));
+        });
+    });
 
-      emit(newState.copyWith(isLoading: true, error: null));
+    on<GifNewSearchEvent>((event, emit) async {
       searchString = event.searchString;
-      try {
-        final newKey = (newState.keys?.last ?? 0) + 1;
-        final newItems = await gifRepository.searchGif(
-          event.searchString,
-          limit,
-          newKey*limit,
-        );
-        final isLastPage = newItems.isEmpty;
-
-        emit(newState.copyWith(
-          pages: [...?state.pages, newItems],
-          keys: [...?state.keys, newKey],
-          hasNextPage: !isLastPage,
-          isLoading: false,
-        ));
-      } catch (error) {
-        emit(state.copyWith(
-          error: error,
-          isLoading: false,
-        ));
-      }
-    },
-    );
-
-    on<GifNewSearchEvent>((event, emit) async{
-      final newState = state;
-        emit(newState.reset());
-        add(GifSearchEvent(event.searchString));
-    },
-    );
-  }
-
-  Future<void> onSearch(GifSearchEvent event, Emitter<PagingState<int, GifState>> emit) async {
-    emit(PagingState());
-    searchString = event.searchString;
+    });
   }
 
 }

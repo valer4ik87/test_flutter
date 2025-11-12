@@ -10,10 +10,10 @@ part 'gif_response.g.dart';
 class GifResponse {
       String? id;
       String? title;
-      String? userName;
+      String? username;
       Map<String,GifImage>? images;
 
-      GifResponse({this.id, this.title, this.userName, this.images});
+      GifResponse({this.id, this.title, this.username, this.images});
 
 
       factory GifResponse.fromJson(Map<String, dynamic> json) =>
