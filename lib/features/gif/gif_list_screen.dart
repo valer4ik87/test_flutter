@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:gif_view/gif_view.dart';
@@ -65,7 +66,7 @@ class _GifListScreenState extends State<GifListScreen> {
                       title: const Text('Error'),
                       content: Text(state.error),
                       actions: [
-                        TextButton(
+                        PlatformTextButton(
                           onPressed: () => Navigator.of(context).pop(),
                           child: const Text('ОК'),
                         ),
