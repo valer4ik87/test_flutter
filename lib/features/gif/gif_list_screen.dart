@@ -113,9 +113,10 @@ class _GifListScreenState extends State<GifListScreen> {
           labelText: 'Search',
           border: OutlineInputBorder(),
         ),*/
+
         material: (context, platform) => MaterialTextFieldData(
           decoration: InputDecoration(
-            hintText: 'Search',
+            labelText: 'Search',
             border: OutlineInputBorder(),
           ),
         ),
