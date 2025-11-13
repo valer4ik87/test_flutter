@@ -12,20 +12,6 @@ import 'package:test_flutter/features/gif/gif_list_screen.dart';
 
 import '../features/gif/bloc/gif_bloc.dart';
 
-
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    _subscription = stream.listen((_) => notifyListeners());
-  }
-  late final StreamSubscription _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
 class AppRouter {
   final HOME = '/';
   final DETAILS = '/details';
@@ -38,22 +24,7 @@ class AppRouter {
       routes: [
         GoRoute(
           path: HOME,
-          builder: (context, state) => BlocListener<GifBloc, GifState>(
-            listener: (context, state) {
-              if (state is ItemClickedState) {
-                context.push(
-                  DETAILS,
-                  extra: state.gifUI,
-                );
-              } else if (state is BackClickState) {
-                if (GoRouter.of(context).canPop()) {
-                  context.pop();
-
-                }
-              }
-            },
-            child: GifListScreen(),
-          ),
+          builder: (context, state) => GifListScreen()
         ),
         GoRoute(
           path: DETAILS,
@@ -64,5 +35,20 @@ class AppRouter {
         ),
       ],
     );
+
+    bloc.stream.listen((state) {
+      final context = router.routerDelegate.navigatorKey.currentContext;
+      if (context == null) return;
+
+      if (state is ItemClickedState) {
+        if (context.mounted) {
+          context.push(DETAILS, extra: state.gifUI);
+        }
+      } else if (state is BackClickState) {
+        if (context.mounted && context.canPop()) {
+          context.pop();
+        }
+      }
+    });
   }
 }

@@ -10,7 +10,7 @@ import '../../core/dio_client.dart';
 import '../../env/keys.dart';
 
 class GifRepository {
-  final client = RestClient(DioClient().dio);
+  var client = RestClient(DioClient().dio);
 
   Future<Either<String, (bool, List<GifUI>)>> searchGif(
     String searchString,
