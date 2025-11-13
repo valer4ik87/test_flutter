@@ -60,7 +60,7 @@ class _GifListScreenState extends State<GifListScreen> {
                     error: null,
                     itemList: List.empty(),
                   );
-                  showDialog(
+                  showPlatformDialog(
                     context: context,
                     builder: (_) => PlatformAlertDialog(
                       title: const Text('Error'),
