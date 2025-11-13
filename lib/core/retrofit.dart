@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:test_flutter/core/base_list_response.dart';
+import 'package:test_flutter/core/model/base_list_response.dart';
 import '../features/gif/model/gif_response.dart';
 
 part 'retrofit.g.dart';

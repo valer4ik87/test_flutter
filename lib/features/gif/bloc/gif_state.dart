@@ -2,19 +2,28 @@ import '../entity/gif_ui.dart';
 
 abstract class GifState {}
 
-class GifSuccessResponse extends GifState {
-   final List<GifUI> listGif;
-   final int nextKey;
-   final bool isLastPage;
-   GifSuccessResponse({required this.listGif, required this.nextKey, required this.isLastPage});
+class GifSuccessResponseState extends GifState {
+   List<GifUI> listGif;
+   int nextKey;
+   bool isLastPage;
+   GifSuccessResponseState({required this.listGif, required this.nextKey, required this.isLastPage});
 }
 
-class GifLoading extends GifState {}
+class GifLoadingState extends GifState {}
 
 class InitState extends GifState {}
 
-class GifError extends GifState {
-   final String error;
+class ItemClickedState extends GifState {
+   GifUI gifUI;
 
-  GifError(this.error);
+   ItemClickedState(this.gifUI);
+}
+
+class BackClickState extends GifState {
+}
+
+class GifErrorState extends GifState {
+   String error;
+
+  GifErrorState(this.error);
 }

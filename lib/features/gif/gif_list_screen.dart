@@ -23,6 +23,7 @@ class GifListScreen extends StatefulWidget {
 class _GifListScreenState extends State<GifListScreen> {
   late GifBloc _bloc;
   late final _pagingController = PagingController<int, GifUI>(firstPageKey: 0);
+  final TextEditingController _textController = TextEditingController();
   Timer? _debounce;
 
   @override
@@ -50,7 +51,7 @@ class _GifListScreenState extends State<GifListScreen> {
           children: [
             BlocListener<GifBloc, GifState>(
               listener: (context, state) {
-                if (state is GifError) {
+                if (state is GifErrorState) {
                   _pagingController.value = PagingState(
                     nextPageKey: 0,
                     error: null,
@@ -74,7 +75,7 @@ class _GifListScreenState extends State<GifListScreen> {
               child: Expanded(
                 child: BlocBuilder<GifBloc, GifState>(
                   builder: (context, state) {
-                    if (state is GifSuccessResponse) {
+                    if (state is GifSuccessResponseState) {
                       if (state.isLastPage) {
                         _pagingController.appendLastPage(state.listGif);
                       } else {
@@ -87,7 +88,7 @@ class _GifListScreenState extends State<GifListScreen> {
                     return Column(
                       children: [
                         Expanded(child: MyGridView()),
-                        if (state is GifLoading)
+                        if (state is GifLoadingState)
                           Center(child: CircularProgressIndicator()),
                       ],
                     );
@@ -113,8 +114,13 @@ class _GifListScreenState extends State<GifListScreen> {
         onChanged: (text) {
           if (_debounce?.isActive ?? false) _debounce!.cancel();
           _debounce = Timer(const Duration(milliseconds: 500), () {
-            _bloc.searchString = text;
-            _pagingController.refresh();
+            _pagingController.value = PagingState(
+              //Очистка предыдущих данных списка
+              nextPageKey: 0,
+              error: null,
+              itemList: List.empty(),
+            );
+            _bloc.add(GifNewSearchEvent(text));
           });
         },
       ),
@@ -126,22 +132,27 @@ class _GifListScreenState extends State<GifListScreen> {
       pagingController: _pagingController,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, item, index) {
-          return Column(
-            children: [
-              Expanded(child: GifView.network(item.previewUrl ?? "")),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Text(item.title ?? "", textAlign: TextAlign.center),
-              ),
-
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  "Author: ${item.author}",
-                  textAlign: TextAlign.center,
+          return GestureDetector(
+            onTap: () {
+              _bloc.add(ItemClickEvent(item));
+            },
+            child: Column(
+              children: [
+                Expanded(child: GifView.network(item.previewUrl ?? "")),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(item.title ?? "", textAlign: TextAlign.center),
                 ),
-              ),
-            ],
+
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    "Author: ${item.author}",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           );
         },
         newPageProgressIndicatorBuilder: (context) {
@@ -153,9 +164,13 @@ class _GifListScreenState extends State<GifListScreen> {
         firstPageErrorIndicatorBuilder: (context) {
           return nil;
         },
+        noItemsFoundIndicatorBuilder: (context) {
+          return nil;
+        },
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount:
+            MediaQuery.of(context).orientation == Orientation.landscape ? 3 : 2,
       ),
     );
   }

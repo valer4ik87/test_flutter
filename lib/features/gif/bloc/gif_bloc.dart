@@ -6,33 +6,47 @@ import '../gif_repository.dart';
 import 'gif_event.dart';
 import 'gif_state.dart';
 
-
 class GifBloc extends Bloc<GifEvent, GifState> {
   final GifRepository gifRepository;
 
   var searchString = "";
   final limit = 20;
 
-
-  GifBloc(this.gifRepository) : super(GifLoading()) {
+  GifBloc(this.gifRepository) : super(InitState()) {
     on<FetchDataEvent>((event, emit) async {
-      emit(GifLoading());
+      if (searchString.isEmpty) return;
+      emit(GifLoadingState());
       final gifs = await gifRepository.searchGif(
         searchString,
         limit,
         event.pageKey * limit,
       );
-      gifs.fold((l) {
-        emit(GifError(l));
-      }, (r) {
-        emit(GifSuccessResponse(
-            listGif: r.$2, nextKey: event.pageKey + 1, isLastPage: r.$1));
-        });
+      gifs.fold(
+        (l) {
+          emit(GifErrorState(l));
+        },
+        (r) {
+          emit(
+            GifSuccessResponseState(
+              listGif: r.$2,
+              nextKey: event.pageKey + 1,
+              isLastPage: r.$1,
+            ),
+          );
+        },
+      );
     });
 
     on<GifNewSearchEvent>((event, emit) async {
       searchString = event.searchString;
+      add(FetchDataEvent(0));
+    });
+
+    on<ItemClickEvent>((event, emit) {
+      emit(ItemClickedState(event.gifUI));
+    });
+    on<BackClickEvent>((event, emit) {
+      emit(BackClickState());
     });
   }
-
 }

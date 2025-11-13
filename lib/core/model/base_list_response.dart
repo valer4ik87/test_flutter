@@ -1,7 +1,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:test_flutter/core/meta_response.dart';
-import 'package:test_flutter/core/pagination_response.dart';
+import 'package:test_flutter/core/model/meta_response.dart';
+import 'package:test_flutter/core/model/pagination_response.dart';
 
 part 'base_list_response.g.dart';
 

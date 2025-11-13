@@ -1,6 +1,7 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:test_flutter/core/base_list_response.dart';
+import 'package:test_flutter/core/model/base_list_response.dart';
 import 'package:test_flutter/core/retrofit.dart';
 import 'package:test_flutter/features/gif/entity/gif_ui.dart';
 import 'package:test_flutter/features/gif/model/gif_response.dart';
@@ -17,6 +18,8 @@ class GifRepository {
     int offset,
   ) async {
     try {
+      var isNetwork = await isNetworkAvailable();
+      if (isNetwork==false) return Left('Network unavailable');
       final response = await client.getGifs(
         Keys.gifKey,
         searchString,
@@ -43,5 +46,10 @@ class GifRepository {
     } catch (e){
       return Left(e.toString());
     }
+  }
+
+  Future<bool> isNetworkAvailable() async {
+    final result = await Connectivity().checkConnectivity();
+    return !result.contains(ConnectivityResult.none);
   }
 }
