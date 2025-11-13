@@ -36,6 +36,7 @@ void main() {
         state is GifSuccessResponseState),
       ]),
     );
+    expect(bloc.state, isA<GifSuccessResponseState>());
   });
 
   test('test  error search bloc', () async {
@@ -53,5 +54,6 @@ void main() {
         state is GifErrorState && state.error=="Error"),
       ]),
     );
+    expect(bloc.state, isA<GifErrorState>());
   });
 }
