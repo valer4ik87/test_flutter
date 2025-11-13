@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -39,40 +40,20 @@ class MyApp extends StatelessWidget {
         BlocProvider.value(value: gifBloc),
       ],
       child: PlatformApp.router(
+        localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+          DefaultMaterialLocalizations.delegate,
+          DefaultWidgetsLocalizations.delegate,
+          DefaultCupertinoLocalizations.delegate,
+        ],
         routerConfig: appRouter.router,
         builder: (context, child) => Overlay(
-          initialEntries: [OverlayEntry(builder: (context) => NetworkOverlay(child: child??nil,))],
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => NetworkOverlay(child: child ?? nil),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-void _insertOverlay(BuildContext context) {
-  return Overlay.of(context).insert(
-    OverlayEntry(
-      builder: (context) {
-        final size = MediaQuery.of(context).size;
-        print(size.width);
-        return Positioned(
-          width: 56,
-          height: 56,
-          top: size.height - 72,
-          left: size.width - 72,
-          child: Material(
-            color: Colors.transparent,
-            child: GestureDetector(
-              onTap: () => print('ON TAP OVERLAY!'),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.redAccent,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    ),
-  );
 }

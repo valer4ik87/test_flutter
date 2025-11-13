@@ -16,8 +16,8 @@ class GifDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<GifBloc>();
     bloc.emit(InitState());
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Text(gif?.title ?? ""),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

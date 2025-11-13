@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -44,8 +46,8 @@ class _GifListScreenState extends State<GifListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("List Gif")),
+    return PlatformScaffold(
+      appBar: PlatformAppBar(title: const Text("List Gif")),
       body: SafeArea(
         child: Column(
           children: [
@@ -59,7 +61,7 @@ class _GifListScreenState extends State<GifListScreen> {
                   );
                   showDialog(
                     context: context,
-                    builder: (_) => AlertDialog(
+                    builder: (_) => PlatformAlertDialog(
                       title: const Text('Error'),
                       content: Text(state.error),
                       actions: [
@@ -89,7 +91,7 @@ class _GifListScreenState extends State<GifListScreen> {
                       children: [
                         Expanded(child: MyGridView()),
                         if (state is GifLoadingState)
-                          Center(child: CircularProgressIndicator()),
+                          Center(child: PlatformCircularProgressIndicator()),
                       ],
                     );
                   },
@@ -106,11 +108,18 @@ class _GifListScreenState extends State<GifListScreen> {
   Widget MyInput(GifBloc bloc) {
     return Container(
       margin: EdgeInsets.all(30),
-      child: TextField(
-        decoration: const InputDecoration(
+      child: PlatformTextField(
+        /*decoration: const InputDecoration(
           labelText: 'Search',
           border: OutlineInputBorder(),
+        ),*/
+        material: (context, platform) => MaterialTextFieldData(
+          decoration: InputDecoration(
+            hintText: 'Search',
+            border: OutlineInputBorder(),
+          ),
         ),
+
         onChanged: (text) {
           if (_debounce?.isActive ?? false) _debounce!.cancel();
           _debounce = Timer(const Duration(milliseconds: 500), () {
