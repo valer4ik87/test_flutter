@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:gif_view/gif_view.dart';
@@ -19,7 +20,7 @@ class GifDetailsScreen extends StatelessWidget {
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text(gif?.title ?? ""),
-        leading: IconButton(
+        leading: PlatformIconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => bloc.add(BackClickEvent()),
         ),
