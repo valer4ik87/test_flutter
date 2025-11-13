@@ -12,9 +12,6 @@ void main() {
 
 
   late GifRepository repository;
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-
   setUp(() {
     repository = MockRepository();
   });
