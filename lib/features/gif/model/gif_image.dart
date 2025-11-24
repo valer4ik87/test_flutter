@@ -1,5 +1,3 @@
-
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'gif_image.g.dart';
@@ -8,8 +6,9 @@ part 'gif_image.g.dart';
 class GifImage {
   String? url;
 
-  GifImage({this.url,});
-
+  GifImage({
+    this.url,
+  });
 
   factory GifImage.fromJson(Map<String, dynamic> json) =>
       _$GifImageFromJson(json);

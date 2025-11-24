@@ -48,7 +48,8 @@ class MyApp extends StatelessWidget {
         builder: (context, child) => Overlay(
           initialEntries: [
             OverlayEntry(
-              builder: (ontext) => NetworkOverlay(child: child ?? const SizedBox.shrink()),
+              builder: (ontext) =>
+                  NetworkOverlay(child: child ?? const SizedBox.shrink()),
             ),
           ],
         ),

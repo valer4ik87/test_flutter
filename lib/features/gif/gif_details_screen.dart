@@ -24,20 +24,24 @@ class GifDetailsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              children: [
-                Expanded(child: GifView.network(gif?.originalUrl ?? "",errorBuilder: (context, error, tryAgain) {
+          width: double.infinity,
+          child: Column(
+            children: [
+              Expanded(
+                  child: GifView.network(
+                gif?.originalUrl ?? "",
+                errorBuilder: (context, error, tryAgain) {
                   return const Center(child: Text('Something wrong'));
-                },)),
-                PlatformElevatedButton(
-                  onPressed: () => bloc.add(BackClickEvent()),
-                  child: const Text('Back'),
-                ),
-              ],
-            ),
+                },
+              )),
+              PlatformElevatedButton(
+                onPressed: () => bloc.add(BackClickEvent()),
+                child: const Text('Back'),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

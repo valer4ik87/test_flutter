@@ -29,10 +29,10 @@ class GifBloc extends Bloc<GifEvent, GifState> {
         (r) {
           emit(
             GifSuccessResponseState(
-              listGif: r.$2,
-              nextKey: event.pageKey + 1,
-              isLastPage: r.$1,
-            ),
+                listGif: r.$2,
+                nextKey: event.pageKey + 1,
+                isLastPage: r.$1,
+                isFirstPage: event.pageKey == 0),
           );
         },
       );

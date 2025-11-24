@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'network_event.dart';
 import 'network_state.dart';
 
@@ -18,8 +17,12 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
       }
     });
 
-    on<NetworkOnlineEvent>((event, emit) => emit(NetworkOnlineState()),);
-    on<NetworkOfflineEvent>((event, emit) => emit(NetworkOfflineState()),);
+    on<NetworkOnlineEvent>(
+      (event, emit) => emit(NetworkOnlineState()),
+    );
+    on<NetworkOfflineEvent>(
+      (event, emit) => emit(NetworkOfflineState()),
+    );
 
     _subscription = Connectivity().onConnectivityChanged.listen((results) {
       if (results.contains(ConnectivityResult.none)) {

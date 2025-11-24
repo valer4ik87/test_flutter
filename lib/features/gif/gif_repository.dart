@@ -18,7 +18,7 @@ class GifRepository {
   ) async {
     try {
       var isNetwork = await isNetworkAvailable();
-      if (isNetwork==false) return const Left('Network unavailable');
+      if (isNetwork == false) return const Left('Network unavailable');
       final response = await client.getGifs(
         Keys.gifKey,
         searchString,
@@ -27,22 +27,23 @@ class GifRepository {
       );
       var newList =
           response?.data?.map((toElement) => GifUI.toGifUI(toElement)) ??
-          List.empty();
+              List.empty();
       var total = response?.pagination?.totalCount ?? 0;
       var offsetResponse = response?.pagination?.offset ?? 0;
       var count = response?.pagination?.count ?? 0;
       var isLastPage = total == 0 || count + offsetResponse >= total;
       return Right((isLastPage, newList.toList()));
     } on DioException catch (e) {
-      final errorBody = BaseListResponse.fromJson(e.response?.data, (json) {
-
-      },);
-      if (errorBody.meta!=null && errorBody.meta?.msg?.isNotEmpty==true) {
-        return Left(errorBody.meta?.msg??"");
+      final errorBody = BaseListResponse.fromJson(
+        e.response?.data,
+        (json) {},
+      );
+      if (errorBody.meta != null && errorBody.meta?.msg?.isNotEmpty == true) {
+        return Left(errorBody.meta?.msg ?? "");
       } else {
-        return Left(e.message??"");
+        return Left(e.message ?? "");
       }
-    } catch (e){
+    } catch (e) {
       return Left(e.toString());
     }
   }

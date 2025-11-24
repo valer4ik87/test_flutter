@@ -10,5 +10,5 @@ part of 'keys.dart';
 // ignore_for_file: type=lint
 // generated_from: keys.env
 final class _Keys {
-  static const String gifKey = '1FHv315qQNPwRESQlqjfqGPRZJ6TvyBj';
+  static const String gifKey = 'mOzxlO7wZdDIAWePxy2QUQ35RteFqJph';
 }

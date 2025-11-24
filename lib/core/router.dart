@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:test_flutter/features/gif/bloc/gif_state.dart';
@@ -7,7 +6,6 @@ import 'package:test_flutter/features/gif/gif_details_screen.dart';
 import 'package:test_flutter/features/gif/gif_list_screen.dart';
 
 import '../features/gif/bloc/gif_bloc.dart';
-
 
 class AppRouter {
   static const String home = '/';

@@ -63,7 +63,7 @@ class _NetworkOverlayState extends State<NetworkOverlay> {
   Widget build(BuildContext contextGlobal) {
     return BlocListener<NetworkBloc, NetworkState>(
       listenWhen: (previous, current) {
-         return previous!=current;
+        return previous != current;
       },
       listener: (context, state) {
         if (!mounted) return;
