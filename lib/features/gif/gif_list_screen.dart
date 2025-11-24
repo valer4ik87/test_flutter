@@ -36,6 +36,7 @@ class _GifListScreenState extends State<GifListScreen> {
 
   @override
   void dispose() {
+    _pagingController.removePageRequestListener(_pageRequestListener);
     _pagingController.dispose();
     super.dispose();
   }
