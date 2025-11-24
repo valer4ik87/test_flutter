@@ -7,7 +7,7 @@ import 'gif_state.dart';
 class GifBloc extends Bloc<GifEvent, GifState> {
   final GifRepository gifRepository;
 
-  var searchString = "";
+  var searchString = '';
   final limit = 20;
 
   GifBloc(this.gifRepository) : super(InitState()) {

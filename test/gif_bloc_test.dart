@@ -25,7 +25,7 @@ void main() {
         .thenAnswer((invocation) async{
       return Right(((false, mockGif)));
     }, );
-    bloc.add(GifNewSearchEvent("test"));
+    bloc.add(GifNewSearchEvent('test'));
     await expectLater(
       bloc.stream,
       emitsInOrder([
@@ -43,14 +43,14 @@ void main() {
         .thenAnswer((invocation) async{
       return const Left(('Error'));
     }, );
-    bloc.add(GifNewSearchEvent("test"));
+    bloc.add(GifNewSearchEvent('test'));
     await expectLater(
       bloc.stream,
       emitsInOrder([
         predicate<GifState>((state) =>
         state is GifLoadingState),
         predicate<GifState>((state) =>
-        state is GifErrorState && state.error=="Error"),
+        state is GifErrorState && state.error=='Error'),
       ]),
     );
     expect(bloc.state, isA<GifErrorState>());

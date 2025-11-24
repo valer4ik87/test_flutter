@@ -12,7 +12,7 @@ class GifUI {
     return GifUI(
         title: response?.title,
         author: response?.username,
-        previewUrl: response?.images?["preview_gif"]?.url,
-        originalUrl: response?.images?["original"]?.url);
+        previewUrl: response?.images?['preview_gif']?.url,
+        originalUrl: response?.images?['original']?.url);
   }
 }

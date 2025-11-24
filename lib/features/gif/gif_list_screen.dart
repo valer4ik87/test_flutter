@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -66,7 +64,7 @@ class _GifListScreenState extends State<GifListScreen> {
               actions: [
                 PlatformTextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("ОК"),
+                  child: const Text('ОК'),
                 ),
               ],
             ),
@@ -74,7 +72,7 @@ class _GifListScreenState extends State<GifListScreen> {
         }
       },
       child: PlatformScaffold(
-        appBar: const PlatformAppBar(title: Text("List Gif")),
+        appBar: const PlatformAppBar(title: Text('List Gif')),
         body: SafeArea(
           child: Column(
             children: [

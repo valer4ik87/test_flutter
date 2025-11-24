@@ -16,7 +16,7 @@ class GifDetailsScreen extends StatelessWidget {
     final bloc = context.read<GifBloc>();
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text(gif?.title ?? ""),
+        title: Text(gif?.title ?? ''),
         leading: PlatformIconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => bloc.add(BackClickEvent()),
@@ -29,7 +29,7 @@ class GifDetailsScreen extends StatelessWidget {
             children: [
               Expanded(
                   child: GifView.network(
-                gif?.originalUrl ?? "",
+                gif?.originalUrl ?? '',
                 errorBuilder: (context, error, tryAgain) {
                   return const Center(child: Text('Something wrong'));
                 },

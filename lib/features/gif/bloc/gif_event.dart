@@ -19,7 +19,7 @@ class FetchDataEvent extends GifEvent {
 }
 
 class GifNewSearchEvent extends GifEvent {
-  String searchString = "";
+  String searchString = '';
 
   GifNewSearchEvent(this.searchString);
 }

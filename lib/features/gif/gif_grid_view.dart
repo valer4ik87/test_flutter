@@ -28,13 +28,13 @@ class GifGridView extends StatelessWidget {
               children: [
                 Expanded(
                     child: GifView.network(
-                  item.previewUrl ?? "",
+                  item.previewUrl ?? '',
                   errorBuilder: (context, error, tryAgain) {
                     return const Center(child: Text('Something wrong'));
                   },
                 )),
-                Text(item.title ?? "", textAlign: TextAlign.center),
-                Text("Author: ${item.author}", textAlign: TextAlign.center),
+                Text(item.title ?? '', textAlign: TextAlign.center),
+                Text('Author: ${item.author}', textAlign: TextAlign.center),
               ],
             ),
           );

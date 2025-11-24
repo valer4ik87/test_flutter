@@ -39,9 +39,9 @@ class GifRepository {
         (json) {},
       );
       if (errorBody.meta != null && errorBody.meta?.msg?.isNotEmpty == true) {
-        return Left(errorBody.meta?.msg ?? "");
+        return Left(errorBody.meta?.msg ?? 'Unknown error');
       } else {
-        return Left(e.message ?? "");
+        return Left(e.message ?? 'Unknown error');
       }
     } catch (e) {
       return Left(e.toString());

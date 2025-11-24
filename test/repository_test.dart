@@ -17,13 +17,13 @@ void main() {
   test('searchGif returns error', () async {
     when(() => repository.searchGif(any(), any(), any()))
         .thenAnswer((invocation) async{
-            return const Left("Error");
+            return const Left('Error');
         }, );
 
     final result = await repository.searchGif('cat', 10, 0);
     result.fold(
-          (l) => expect(l, "Error"),
-          (r) => fail("Should not return Right"),
+          (l) => expect(l, 'Error'),
+          (r) => fail('Should not return Right'),
     );
   });
 
@@ -36,7 +36,7 @@ void main() {
 
     final result = await repository.searchGif('cat', 10, 0);
     result.fold(
-          (l) => fail("Fail"),
+          (l) => fail('Fail'),
           (r) {
             final (isLastPage, list) = r;
             expect(isLastPage, false);
