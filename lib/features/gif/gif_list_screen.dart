@@ -84,6 +84,7 @@ class _GifListScreenState extends State<GifListScreen> {
                       buildWhen: (_, state) {
                         return state is GifLoadingState ||
                             state is InitState ||
+                            state is GifErrorState ||
                             state is GifSuccessResponseState;
                       },
                       builder: (context, state) {
