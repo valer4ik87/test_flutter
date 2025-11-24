@@ -22,12 +22,10 @@ class GifSearchInput extends StatefulWidget {
 
 class _GifSearchInputState extends State<GifSearchInput> {
   Timer? debounce;
-  late GifBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _bloc = context.read<GifBloc>();
   }
 
   @override
@@ -56,10 +54,11 @@ class _GifSearchInputState extends State<GifSearchInput> {
         onChanged: (text) {
           debounce?.cancel();
           debounce = Timer(const Duration(milliseconds: 500), () {
+            if (!mounted) return;
             widget.pagingController
                 .removePageRequestListener(widget.pageRequestListener);
             widget.pagingController.refresh();
-            _bloc.add(GifNewSearchEvent(text));
+            context.read<GifBloc>().add(GifNewSearchEvent(text));
             widget.pagingController
                 .addPageRequestListener(widget.pageRequestListener);
           });

@@ -17,13 +17,12 @@ class GifGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<GifBloc>();
     return PagedSliverGrid<int, GifUI>(
       pagingController: pagingController,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, item, index) {
           return GestureDetector(
-            onTap: () => bloc.add(ItemClickEvent(item)),
+            onTap: () => context.read<GifBloc>().add(ItemClickEvent(item)),
             child: Column(
               children: [
                 Expanded(

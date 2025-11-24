@@ -13,13 +13,12 @@ class GifDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<GifBloc>();
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text(gif?.title ?? ''),
         leading: PlatformIconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => bloc.add(BackClickEvent()),
+          onPressed: () => context.read<GifBloc>().add(BackClickEvent()),
         ),
       ),
       body: SafeArea(
@@ -35,7 +34,7 @@ class GifDetailsScreen extends StatelessWidget {
                 },
               )),
               PlatformElevatedButton(
-                onPressed: () => bloc.add(BackClickEvent()),
+                onPressed: () => context.read<GifBloc>().add(BackClickEvent()),
                 child: const Text('Back'),
               ),
             ],
