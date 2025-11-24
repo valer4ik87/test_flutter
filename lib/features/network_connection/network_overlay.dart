@@ -6,10 +6,10 @@ import 'bloc/network_state.dart';
 class NetworkOverlay extends StatefulWidget {
   final Widget child;
 
-  const NetworkOverlay({required this.child, Key? key}) : super(key: key);
+  const NetworkOverlay({required this.child, super.key});
 
   @override
-  _NetworkOverlayState createState() => _NetworkOverlayState();
+  State<NetworkOverlay> createState() => _NetworkOverlayState();
 }
 
 class _NetworkOverlayState extends State<NetworkOverlay> {
@@ -20,7 +20,7 @@ class _NetworkOverlayState extends State<NetworkOverlay> {
   OverlayEntry _createOverlayEntry() {
     return OverlayEntry(
       builder: (context) {
-        return Positioned(
+        return const Positioned(
           top: 0,
           left: 0,
           right: 0,
@@ -47,7 +47,6 @@ class _NetworkOverlayState extends State<NetworkOverlay> {
   void _showOverlay(BuildContext context) {
     if (_isShown) return;
     final overlay = Overlay.of(context);
-    if (overlay == null) return;
     _overlayEntry = _createOverlayEntry();
     overlay.insert(_overlayEntry!);
     _isShown = true;
@@ -63,11 +62,14 @@ class _NetworkOverlayState extends State<NetworkOverlay> {
   @override
   Widget build(BuildContext contextGlobal) {
     return BlocListener<NetworkBloc, NetworkState>(
+      listenWhen: (previous, current) {
+         return previous!=current;
+      },
       listener: (context, state) {
         if (!mounted) return;
-        if (state is NetworkOffline) {
+        if (state is NetworkOfflineState) {
           _showOverlay(contextGlobal);
-        } else if (state is NetworkOnline) {
+        } else if (state is NetworkOnlineState) {
           _hideOverlay();
         }
       },

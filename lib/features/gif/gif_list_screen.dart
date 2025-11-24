@@ -1,18 +1,13 @@
 import 'dart:async';
 
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:gif_view/gif_view.dart';
-import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:nil/nil.dart';
 import 'package:test_flutter/features/gif/bloc/gif_bloc.dart';
 import 'package:test_flutter/features/gif/bloc/gif_event.dart';
 import 'package:test_flutter/features/gif/bloc/gif_state.dart';
-import 'package:test_flutter/features/gif/gif_repository.dart';
 
 import 'entity/gif_ui.dart';
 
@@ -26,7 +21,6 @@ class GifListScreen extends StatefulWidget {
 class _GifListScreenState extends State<GifListScreen> {
   late GifBloc _bloc;
   late final _pagingController = PagingController<int, GifUI>(firstPageKey: 0);
-  final TextEditingController _textController = TextEditingController();
   Timer? _debounce;
 
   @override
@@ -47,60 +41,70 @@ class _GifListScreenState extends State<GifListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-      appBar: PlatformAppBar(title: const Text("List Gif")),
-      body: SafeArea(
-        child: Column(
-          children: [
-            BlocListener<GifBloc, GifState>(
-              listener: (context, state) {
-                if (state is GifErrorState) {
-                  _pagingController.value = PagingState(
-                    nextPageKey: 0,
-                    error: null,
-                    itemList: List.empty(),
-                  );
-                  showPlatformDialog(
-                    context: context,
-                    builder: (_) => PlatformAlertDialog(
-                      title: const Text('Error'),
-                      content: Text(state.error),
-                      actions: [
-                        PlatformTextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('ОК'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              child: Expanded(
-                child: BlocBuilder<GifBloc, GifState>(
-                  builder: (context, state) {
-                    if (state is GifSuccessResponseState) {
-                      if (state.isLastPage) {
-                        _pagingController.appendLastPage(state.listGif);
-                      } else {
-                        _pagingController.appendPage(
-                          state.listGif,
-                          state.nextKey,
+    return BlocListener<GifBloc, GifState>(
+      listenWhen: (previous, current) {
+        return current is GifSuccessResponseState || current is GifErrorState;
+      },
+      listener: (context, state) {
+        if (state is GifSuccessResponseState) {
+          if (state.isLastPage) {
+            _pagingController.appendLastPage(state.listGif);
+          } else {
+            _pagingController.appendPage(state.listGif, state.nextKey);
+          }
+        }
+
+        if (state is GifErrorState) {
+          _pagingController.error = state.error;
+
+          showPlatformDialog(
+            context: context,
+            builder: (_) => PlatformAlertDialog(
+              title: const Text('Error'),
+              content: Text(state.error),
+              actions: [
+                PlatformTextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("ОК"),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      child: PlatformScaffold(
+        appBar: const PlatformAppBar(title: Text("List Gif")),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    MyGridView(),
+                    BlocBuilder<GifBloc, GifState>(
+                      buildWhen: (_, state) {
+                        return state is GifLoadingState || state is InitState;
+                      },
+                      builder: (context, state) {
+                        return SliverToBoxAdapter(
+                          child: state is GifLoadingState
+                              ? const Center(
+                                  child: SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: PlatformCircularProgressIndicator(),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                         );
-                      }
-                    }
-                    return Column(
-                      children: [
-                        Expanded(child: MyGridView()),
-                        if (state is GifLoadingState)
-                          Center(child: PlatformCircularProgressIndicator()),
-                      ],
-                    );
-                  },
+                      },
+                    ),
+                  ],
                 ),
               ),
-            ),
-            MyInput(_bloc),
-          ],
+              MyInput(_bloc),
+            ],
+          ),
         ),
       ),
     );
@@ -108,28 +112,29 @@ class _GifListScreenState extends State<GifListScreen> {
 
   Widget MyInput(GifBloc bloc) {
     return Container(
-      margin: EdgeInsets.all(30),
+      height: 40,
+      margin: const EdgeInsets.fromLTRB(30, 10, 30, 10),
       child: PlatformTextField(
-        /*decoration: const InputDecoration(
-          labelText: 'Search',
-          border: OutlineInputBorder(),
-        ),*/
-
         material: (context, platform) => MaterialTextFieldData(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Search',
             border: OutlineInputBorder(),
           ),
         ),
-
+        cupertino: (context, platform) {
+          return CupertinoTextFieldData(
+              decoration: BoxDecoration(
+                  border: BoxBorder.all(
+                      color: const Color.fromARGB(255, 0, 0, 0))));
+        },
         onChanged: (text) {
           if (_debounce?.isActive ?? false) _debounce!.cancel();
           _debounce = Timer(const Duration(milliseconds: 500), () {
-            _pagingController.value = PagingState(
+            _pagingController.value = const PagingState(
               //Очистка предыдущих данных списка
               nextPageKey: 0,
               error: null,
-              itemList: List.empty(),
+              itemList: [],
             );
             _bloc.add(GifNewSearchEvent(text));
           });
@@ -139,44 +144,46 @@ class _GifListScreenState extends State<GifListScreen> {
   }
 
   Widget MyGridView() {
-    return PagedGridView<int, GifUI>(
+    return PagedSliverGrid<int, GifUI>(
       pagingController: _pagingController,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, item, index) {
-          return GestureDetector(
-            onTap: () {
-              _bloc.add(ItemClickEvent(item));
-            },
-            child: Column(
-              children: [
-                Expanded(child: GifView.network(item.previewUrl ?? "")),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(item.title ?? "", textAlign: TextAlign.center),
+          return Container(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              child: GestureDetector(
+                onTap: () {
+                  _bloc.add(ItemClickEvent(item));
+                },
+                child: Column(
+                  children: [
+                    Expanded(child: GifView.network(item.previewUrl ?? "")),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child:
+                          Text(item.title ?? "", textAlign: TextAlign.center),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        "Author: ${item.author}",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
-
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    "Author: ${item.author}",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          );
+              ));
         },
         newPageProgressIndicatorBuilder: (context) {
-          return nil;
+          return const SizedBox.shrink();
         },
         firstPageProgressIndicatorBuilder: (context) {
-          return nil;
+          return const SizedBox.shrink();
         },
         firstPageErrorIndicatorBuilder: (context) {
-          return nil;
+          return const SizedBox.shrink();
         },
         noItemsFoundIndicatorBuilder: (context) {
-          return nil;
+          return const SizedBox.shrink();
         },
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

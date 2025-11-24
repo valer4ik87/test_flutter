@@ -1,10 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:test_flutter/core/model/base_list_response.dart';
 import 'package:test_flutter/core/retrofit.dart';
 import 'package:test_flutter/features/gif/entity/gif_ui.dart';
-import 'package:test_flutter/features/gif/model/gif_response.dart';
 
 import '../../core/dio_client.dart';
 import '../../env/keys.dart';
@@ -19,7 +18,7 @@ class GifRepository {
   ) async {
     try {
       var isNetwork = await isNetworkAvailable();
-      if (isNetwork==false) return Left('Network unavailable');
+      if (isNetwork==false) return const Left('Network unavailable');
       final response = await client.getGifs(
         Keys.gifKey,
         searchString,
@@ -29,7 +28,7 @@ class GifRepository {
       var newList =
           response?.data?.map((toElement) => GifUI.toGifUI(toElement)) ??
           List.empty();
-      var total = response?.pagination?.total_count ?? 0;
+      var total = response?.pagination?.totalCount ?? 0;
       var offsetResponse = response?.pagination?.offset ?? 0;
       var count = response?.pagination?.count ?? 0;
       var isLastPage = total == 0 || count + offsetResponse >= total;

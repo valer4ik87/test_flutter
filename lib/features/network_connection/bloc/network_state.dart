@@ -2,6 +2,6 @@ abstract class NetworkState {}
 
 class NetworkInitial extends NetworkState {}
 
-class NetworkOnline extends NetworkState {}
+class NetworkOnlineState extends NetworkState {}
 
-class NetworkOffline extends NetworkState {}
+class NetworkOfflineState extends NetworkState {}

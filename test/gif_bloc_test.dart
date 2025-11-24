@@ -1,6 +1,5 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test_flutter/features/gif/bloc/gif_bloc.dart';
 import 'package:test_flutter/features/gif/bloc/gif_event.dart';
@@ -42,7 +41,7 @@ void main() {
   test('test  error search bloc', () async {
     when(() => repository.searchGif(any(), any(), any()))
         .thenAnswer((invocation) async{
-      return Left(('Error'));
+      return const Left(('Error'));
     }, );
     bloc.add(GifNewSearchEvent("test"));
     await expectLater(

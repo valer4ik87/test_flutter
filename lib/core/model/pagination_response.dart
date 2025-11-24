@@ -5,10 +5,11 @@ part 'pagination_response.g.dart';
 
 @JsonSerializable(genericArgumentFactories: true)
 class PaginationResponse {
-      int? total_count;
+      @JsonKey(name: 'total_count')
+      int? totalCount;
       int? count;
       int? offset;
-      PaginationResponse({this.total_count, this.count, this.offset});
+      PaginationResponse({this.totalCount, this.count, this.offset});
 
       factory PaginationResponse.fromJson(Map<String, dynamic> json) =>
           _$PaginationResponseFromJson(json);

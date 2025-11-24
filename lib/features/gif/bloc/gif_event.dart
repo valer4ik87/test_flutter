@@ -11,6 +11,10 @@ class BackClickEvent extends GifEvent{
 
 }
 
+class InitNavigationEvent extends GifEvent{
+
+}
+
 
 class FetchDataEvent extends GifEvent {
     int pageKey;

@@ -1,6 +1,4 @@
 
-import 'dart:collection';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:test_flutter/features/gif/model/gif_image.dart';
 

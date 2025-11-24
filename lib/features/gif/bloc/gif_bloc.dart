@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:test_flutter/features/gif/entity/gif_ui.dart';
 
 import '../gif_repository.dart';
 import 'gif_event.dart';
@@ -14,7 +12,10 @@ class GifBloc extends Bloc<GifEvent, GifState> {
 
   GifBloc(this.gifRepository) : super(InitState()) {
     on<FetchDataEvent>((event, emit) async {
-      if (searchString.isEmpty) return;
+      if (searchString.isEmpty) {
+        emit(InitState());
+        return;
+      }
       emit(GifLoadingState());
       final gifs = await gifRepository.searchGif(
         searchString,

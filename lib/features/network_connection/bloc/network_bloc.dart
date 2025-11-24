@@ -12,21 +12,23 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     on<CheckNetwork>((event, emit) async {
       final results = await Connectivity().checkConnectivity();
       if (results.contains(ConnectivityResult.none)) {
-        emit(NetworkOffline());
+        emit(NetworkOfflineState());
       } else {
-        emit(NetworkOnline());
+        emit(NetworkOnlineState());
       }
     });
+
+    on<NetworkOnlineEvent>((event, emit) => emit(NetworkOnlineState()),);
+    on<NetworkOfflineEvent>((event, emit) => emit(NetworkOfflineState()),);
 
     _subscription = Connectivity().onConnectivityChanged.listen((results) {
       if (results.contains(ConnectivityResult.none)) {
-        emit(NetworkOffline());
+        add(NetworkOfflineEvent());
       } else {
-        emit(NetworkOnline());
+        add(NetworkOnlineEvent());
       }
     });
 
-    // Проверка при запуске
     add(CheckNetwork());
   }
 

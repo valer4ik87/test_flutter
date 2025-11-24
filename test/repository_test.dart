@@ -1,8 +1,6 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:test_flutter/core/retrofit.dart';
 import 'package:test_flutter/features/gif/entity/gif_ui.dart';
 import 'package:test_flutter/features/gif/gif_repository.dart';
 
@@ -19,7 +17,7 @@ void main() {
   test('searchGif returns error', () async {
     when(() => repository.searchGif(any(), any(), any()))
         .thenAnswer((invocation) async{
-            return Left("Error");
+            return const Left("Error");
         }, );
 
     final result = await repository.searchGif('cat', 10, 0);

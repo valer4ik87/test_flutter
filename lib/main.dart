@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:nil/nil.dart';
 import 'package:test_flutter/features/gif/bloc/gif_bloc.dart';
 import 'package:test_flutter/features/gif/gif_repository.dart';
 import 'package:test_flutter/features/network_connection/bloc/network_bloc.dart';
@@ -40,7 +39,7 @@ class MyApp extends StatelessWidget {
         BlocProvider.value(value: gifBloc),
       ],
       child: PlatformApp.router(
-        localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
           DefaultCupertinoLocalizations.delegate,
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) => Overlay(
           initialEntries: [
             OverlayEntry(
-              builder: (context) => NetworkOverlay(child: child ?? nil),
+              builder: (ontext) => NetworkOverlay(child: child ?? const SizedBox.shrink()),
             ),
           ],
         ),
