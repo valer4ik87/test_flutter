@@ -1,2 +1,2 @@
 # test_flutter
-flutter version 3.32.4
+flutter version 3.38.2
